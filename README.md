@@ -14,6 +14,9 @@ A namespace regex rejected spec-legal hyphens. The fix also corrected a did:pkh 
 **[Exclude soft-deleted executions from workflow delete pre-check](https://github.com/KeeperHub/keeperhub/pull/2123)** &nbsp;`KeeperHub/keeperhub#2123`<br>
 A soft-delete regression left the delete pre-check returning a false 409 for workflows whose run history had already been purged. Traced to the exact commit that moved executions to soft-delete without updating the guard, fixed by excluding the soft-deleted rows.
 
+**[Fix drifted contractimport! rustdoc examples](https://github.com/stellar/rs-soroban-sdk/pull/2056)** &nbsp;`stellar/rs-soroban-sdk#2056`<br>
+Because they were marked `ignore`, nothing compiled the examples, so their drift went unnoticed: a nonexistent wasm file, and the generated client misnamed `ContractClient` when it is actually `Client`. Caught and corrected both.
+
 ### `$` about
 
 midasbal (Taylan Bal). Solo web3 developer, EVM and Soroban. Most of my useful work happens in the gap between what a contract promises and what it actually does. Currently moving into smart contract security and auditing, which is mostly this, with a job title.
