@@ -5,6 +5,9 @@
 **[Scale remaining order amounts exactly, not through basis points](https://github.com/ProjectOpenSea/seaport-js/pull/991)** &nbsp;`ProjectOpenSea/seaport-js#991`<br>
 A basis-points detour under-scaled partial fills. On a 9 ETH order partially filled, the default fulfill path built a 5.9994 ETH transaction where the contract required 6, reverting an ordinary fill with `InsufficientNativeTokensSupplied`. Traced to a sibling fix that never reached these two functions, verified against seaport-core that the on-chain fill fraction is exact-or-revert, and covered by a regression test that fails on main with the exact wei mismatch.
 
+**[Make the per-IP token bucket thread-safe under concurrent requests](https://github.com/flop-labs/technocore-chat/pull/163)** &nbsp;`flop-labs/technocore-chat#163`<br>
+`take()` and `refund()` did an unlocked read-modify-write on the shared per-IP bucket map, and Starlette runs those sync handlers in a threadpool, so two requests from one IP could read the same bucket before either wrote back and both were granted: a lost update that lets a burst overspend its own rate limit. Closed it with a lock around both read-modify-write sites, and a regression test that forces the interleaving and runs red on main, green with the lock.
+
 **[Add a reusable chain_id query-param parser](https://github.com/getoptimum/optimum-common/pull/191)** &nbsp;`getoptimum/optimum-common#191`<br>
 A single reusable uint64 chain_id parser for the shared library, closing the tracking issue and standardizing what had been two near-duplicate implementations across services. Shipped an option-based API first, then simplified to a single flag on maintainer review.
 
