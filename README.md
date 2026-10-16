@@ -8,17 +8,15 @@ A basis-points detour under-scaled partial fills. On a 9 ETH order partially fil
 **[Make the per-IP token bucket thread-safe under concurrent requests](https://github.com/flop-labs/technocore-chat/pull/163)** &nbsp;`flop-labs/technocore-chat#163`<br>
 `take()` and `refund()` did an unlocked read-modify-write on the shared per-IP bucket map, and Starlette runs those sync handlers in a threadpool, so two requests from one IP could read the same bucket before either wrote back and both were granted: a lost update that lets a burst overspend its own rate limit. Closed it with a lock around both read-modify-write sites, and a regression test that forces the interleaving and runs red on main, green with the lock.
 
-**[Add a reusable chain_id query-param parser](https://github.com/getoptimum/optimum-common/pull/191)** &nbsp;`getoptimum/optimum-common#191`<br>
-A single reusable uint64 chain_id parser for the shared library, closing the tracking issue and standardizing what had been two near-duplicate implementations across services. Shipped an option-based API first, then simplified to a single flag on maintainer review.
+**[Classify unseal failures as a typed error to stop a doomed retry loop](https://github.com/FhenixProtocol/cofhesdk/pull/412)** &nbsp;`FhenixProtocol/cofhesdk#412`<br>
+On the decryptForView path, an unseal failure (wrong key, tampered payload, malformed nonce) threw a plain `Error` instead of the `CofheError` the rest of the decrypt flow uses. So callers could not branch on `error.code`, and `useCofheDecrypt`, which only stops retrying on `CofheError`, kept re-submitting the whole seal-output request to the threshold network for a failure that is deterministic and can never succeed. Reclassified these as `CofheError` with code `SealOutputFailed`, with error context limited to byte lengths so no key material leaks, plus failure-path tests covering wrong key, corrupted payload, and malformed nonce.
 
-**[Allow hyphen in CAIP-2 namespace per spec](https://github.com/agentcommercekit/ack/pull/176)** &nbsp;`agentcommercekit/ack#176`<br>
-A namespace regex rejected spec-legal hyphens. The fix also corrected a did:pkh test that had been passing only because of the same wrong pattern.
+### `$` more
 
-**[Exclude soft-deleted executions from workflow delete pre-check](https://github.com/KeeperHub/keeperhub/pull/2123)** &nbsp;`KeeperHub/keeperhub#2123`<br>
-A soft-delete regression left the delete pre-check returning a false 409 for workflows whose run history had already been purged. Traced to the exact commit that moved executions to soft-delete without updating the guard, fixed by excluding the soft-deleted rows.
-
-**[Fix drifted contractimport! rustdoc examples](https://github.com/stellar/rs-soroban-sdk/pull/2056)** &nbsp;`stellar/rs-soroban-sdk#2056`<br>
-Because they were marked `ignore`, nothing compiled the examples, so their drift went unnoticed: a nonexistent wasm file, and the generated client misnamed `ContractClient` when it is actually `Client`. Caught and corrected both.
+- [`KeeperHub/keeperhub#2123`](https://github.com/KeeperHub/keeperhub/pull/2123) soft-delete regression that returned a false 409 on workflows whose run history was purged, traced to the commit and fixed.
+- [`agentcommercekit/ack#176`](https://github.com/agentcommercekit/ack/pull/176) CAIP-2 namespace regex corrected to accept spec-legal hyphens, plus a test that had been passing for the wrong reason.
+- [`getoptimum/optimum-common#191`](https://github.com/getoptimum/optimum-common/pull/191) a reusable uint64 chain_id parser for the shared library, closing the tracking issue.
+- [`stellar/rs-soroban-sdk#2056`](https://github.com/stellar/rs-soroban-sdk/pull/2056) drifted `contractimport!` rustdoc examples corrected, a nonexistent wasm file and the wrong generated client name.
 
 ### `$` about
 
