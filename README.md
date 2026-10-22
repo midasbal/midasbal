@@ -17,6 +17,7 @@ On the decryptForView path, an unseal failure (wrong key, tampered payload, malf
 - [`agentcommercekit/ack#176`](https://github.com/agentcommercekit/ack/pull/176) CAIP-2 namespace regex corrected to accept spec-legal hyphens, plus a test that had been passing for the wrong reason.
 - [`getoptimum/optimum-common#191`](https://github.com/getoptimum/optimum-common/pull/191) a reusable uint64 chain_id parser for the shared library, closing the tracking issue.
 - [`stellar/rs-soroban-sdk#2056`](https://github.com/stellar/rs-soroban-sdk/pull/2056) drifted `contractimport!` rustdoc examples corrected, a nonexistent wasm file and the wrong generated client name.
+- [`magicblock-labs/ephemeral-spl-token#132`](https://github.com/magicblock-labs/ephemeral-spl-token/pull/132) the shuttle close path derived the same PDA twice across its two token branches; collapsed it to one derivation, behavior-preserving.
 
 ### `$` about
 
